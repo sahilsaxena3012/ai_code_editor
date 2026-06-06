@@ -179,10 +179,10 @@ export default function ProjectTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem asChild>
-                        <MarkedToggleButton
-                          markedForRevision={project.Starmark[0]?.isMarked}
-                          id={project.id}
-                        />
+                        {/*<MarkedToggleButton
+                          //markedForRevision={project.Starmark[0]?.isMarked}
+                          //id={project.id}
+                        />*/}
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link
@@ -245,8 +245,10 @@ export default function ProjectTable({
           <DialogHeader>
             <DialogTitle>Edit Project</DialogTitle>
             <DialogDescription>
-              Make changes to your project details here. Click save when you're
-              done.
+              {
+                "Make changes to your project details here. Click save when you're"
+              }
+              {"done."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -303,9 +305,9 @@ export default function ProjectTable({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Project</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{selectedProject?.title}"? This
-              action cannot be undone. All files and data associated with this
-              project will be permanently removed.
+              Are you sure you want to delete &quot;{selectedProject?.title}
+              &quot;? This action cannot be undone. All files and data
+              associated with this project will be permanently removed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
