@@ -26,10 +26,15 @@ const AddNewButton = () => {
     description?: string;
   }) => {
     setSelectedTemplate(data);
-    const res = await createPlayground(data);
-    toast.success("Playground Created Successfully");
-    setIsModalOpen(false);
-    router.push(`playground/${res?.id}`);
+    try {
+      const res = await createPlayground(data);
+      if (!res?.id) throw new Error("Create failed");
+      toast.success("Playground Created Successfully");
+      setIsModalOpen(false);
+      router.push(`/playground/${res.id}`);
+    } catch {
+      toast.error("Failed to create playground");
+    }
   };
   return (
     <>
