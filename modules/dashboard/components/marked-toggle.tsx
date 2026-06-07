@@ -37,15 +37,23 @@ export const MarkedToggleButton = forwardRef<
       const { success, error, isMarked } = res;
 
       //    if ismarked true then show marked successfully otherwise show start over
-      if (isMarked && !error && success) {
+      if (!success) {
+        setIsMarked(!newMarkedState);
+        toast.error(error ?? "Failed to update favorite");
+        return;
+      }
+
+      if (isMarked) {
         toast.success("Added to Favorites successfully");
       } else {
         toast.success("Removed from Favorites successfully");
       }
+      // Revert state if the update fails
+      // You might want to add a toast notification here for the user
     } catch (error) {
       console.error("Failed to toggle mark for revision:", error);
-      setIsMarked(!newMarkedState); // Revert state if the update fails
-      // You might want to add a toast notification here for the user
+      setIsMarked(!newMarkedState);
+      toast.error("Failed to update favourite");
     }
   };
 

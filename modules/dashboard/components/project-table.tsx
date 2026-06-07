@@ -104,7 +104,7 @@ export default function ProjectTable({
   };
 
   const handleUpdateProject = async () => {
-    if (!selectedProject || onUpdateProject) return;
+    if (!selectedProject || !onUpdateProject) return;
 
     setIsLoading(true);
 
@@ -113,9 +113,9 @@ export default function ProjectTable({
       setEditDialogOpen(false);
       toast.success("Project Updated Successfully");
     } catch (error) {
-      console.log(console.error);
+      console.log("Error updating project", error);
     } finally {
-      setIsLoading(true);
+      setIsLoading(false);
     }
   };
 
