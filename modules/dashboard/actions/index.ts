@@ -139,7 +139,7 @@ export const duplicateProjectById = async (id: string) => {
       },
     });
 
-    revalidatePath("/dasboard");
+    revalidatePath("/dashboard");
     return duplicatedPlayground;
   } catch (error) {
     console.log("Error dulpicating projects:", error);
