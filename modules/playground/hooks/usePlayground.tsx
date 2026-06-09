@@ -6,7 +6,7 @@ import { getPlaygroundById, SaveUpdatedCode } from "../actions";
 
 interface PlaygroundData {
   id: string;
-  name?: string;
+  title?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
