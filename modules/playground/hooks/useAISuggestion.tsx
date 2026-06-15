@@ -1,7 +1,7 @@
-import { editor } from "monaco-editor";
+import { isLastDayOfMonth } from "date-fns";
 import { useState, useCallback } from "react";
 
-interface AISuggestionState {
+interface AISuggestionsState {
   suggestion: string | null;
   isLoading: boolean;
   position: { line: number; column: number } | null;
@@ -9,20 +9,16 @@ interface AISuggestionState {
   isEnabled: boolean;
 }
 
-interface useAISuggestionsReturn extends AISuggestionState {
+interface UseAISuggestionsReturn extends AISuggestionsState {
   toggleEnabled: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fetchSuggestion: (type: string, editor: any) => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   acceptSuggestion: (editor: any, monaco: any) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rejectSuggestion: (editor: any) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   clearSuggestion: (editor: any) => void;
 }
 
-export const useAISuggestions = (): useAISuggestionsReturn => {
-  const [state, setState] = useState<AISuggestionState>({
+export const useAISuggestions = (): UseAISuggestionsReturn => {
+  const [state, setState] = useState<AISuggestionsState>({
     suggestion: null,
     isLoading: false,
     position: null,
@@ -34,7 +30,6 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
     setState((prev) => ({ ...prev, isEnabled: !prev.isEnabled }));
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetchSuggestion = useCallback(async (type: string, editor: any) => {
     setState((currentState) => {
       if (!currentState.isEnabled) {
@@ -45,7 +40,7 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
         return currentState;
       }
 
-      const model = editor.getMOdel();
+      const model = editor.getModel();
       const cursorPosition = editor.getPosition();
 
       if (!model || !cursorPosition) {
@@ -59,18 +54,17 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
           const payload = {
             fileContent: model.getValue(),
             cursorLine: cursorPosition.lineNumber - 1,
-            cursorColumn: cursorPosition.columnNumber - 1,
+            cursorColumn: cursorPosition.column - 1,
             suggestionType: type,
           };
 
-          const response = await fetch("/api/code-suggestions", {
+          const response = await fetch("/api/code-completion", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-
           if (!response.ok) {
-            throw new Error(`API Responded with status ${response.status}`);
+            throw new Error(`API responded with status ${response.status}`);
           }
 
           const data = await response.json();
@@ -87,7 +81,7 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
               isLoading: false,
             }));
           } else {
-            console.warn("No suggestion received from API");
+            console.warn("No suggestion received from API.");
             setState((prev) => ({ ...prev, isLoading: false }));
           }
         } catch (error) {
@@ -95,11 +89,12 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
           setState((prev) => ({ ...prev, isLoading: false }));
         }
       })();
+
+      return newState;
     });
   }, []);
 
   const acceptSuggestion = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-expressions
     (editor: any, monaco: any) => {
       setState((currentState) => {
         if (
@@ -139,7 +134,6 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
     };
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rejectSuggestion = useCallback((editor: any) => {
     setState((currentState) => {
       if (editor && currentState.decoration.length > 0) {
@@ -155,13 +149,11 @@ export const useAISuggestions = (): useAISuggestionsReturn => {
     });
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const clearSuggestion = useCallback((editor: any) => {
     setState((currentState) => {
       if (editor && currentState.decoration.length > 0) {
         editor.deltaDecorations(currentState.decoration, []);
       }
-
       return {
         ...currentState,
         suggestion: null,
